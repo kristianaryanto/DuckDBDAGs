@@ -1,0 +1,6 @@
+sources:
+  - name: external_source
+    meta:
+      external_location: "/home/kris/bribro/data-lake/1724138716_MASS_GL_TidakValid1juta.csv"
+    tables:
+      - name: source1

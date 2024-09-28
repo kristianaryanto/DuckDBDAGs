@@ -1,0 +1,12 @@
+dbt_gt:
+  target: prod
+  outputs:
+    prod:
+      type: duckdb
+      path: /opt/airflow/duckdb.db  # Specify the path to your DuckDB file
+      threads: 4
+      settings:
+              memory_limit: "4GB"  # Set memory limit for DuckDB
+              temp_directory: "/tmp/duckdb_swap"  # Set temporary directory for DuckDB
+              max_temp_directory_size: "100GB"  # Set maximum temporary directory size
+

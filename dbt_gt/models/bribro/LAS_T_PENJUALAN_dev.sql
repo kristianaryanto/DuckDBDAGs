@@ -1,0 +1,44 @@
+{{ config(
+    materialized='table'
+) }}
+
+
+SELECT 
+    distinct
+    -- ROW_NUMBER() OVER () AS id,  
+    CAST(CIFT.CIF AS VARCHAR(20)) AS CIF,  
+    CAST(KR.NO_REKENING AS VARCHAR(50)) AS NO_REKENING,  
+    CAST(CONCAT(LR.TAHUN_POSISI, '-01-01') AS TIMESTAMP) AS TAHUN_POSISI,  
+    CAST(LR.PENJUALAN_BERSIH AS DECIMAL(18, 0)) AS PENJUALAN_BERSIH,  
+    CAST(STRFTIME(STRPTIME(CAST(N.TANGGAL_POSISI AS VARCHAR), '%d%m%Y'), '%Y-%m-%d') AS TIMESTAMP) as TANGGAL_POSISI,
+    CAST(LR.PERIODE AS INT) AS PERIODE,
+    CAST(KR.BARU_PERPANJANGAN AS VARCHAR(50)) AS BARU_PERPANJANGAN,  
+    CAST(A.FID_TP_PRODUK AS NCHAR(10)) AS FID_TP_PRODUK  
+FROM 
+read_parquet("/opt/airflow/data-lake/LAS_T_CIF.parquet")  CIFT
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_APLIKASI.parquet")  A ON A.FID_CIF_LAS = CIFT.CIF_LAS
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_KREDIT.parquet")  KR ON KR.ID_KREDIT = A.FID_KREDIT
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_RUGI_LABA.parquet") LR  ON LR.FID_CIF_LAS = CIFT.CIF_LAS
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_NERACA.parquet")  N ON LR.FID_CIF_LAS = N.FID_CIF_LAS
+WHERE CIFT.CIF is not null and KR.NO_REKENING is not null
+-- AND A.FID_TP_PRODU?K IN (7,49,50)
+UNION ALL
+SELECT 
+    distinct
+    -- ROW_NUMBER() OVER () AS id,  
+    CAST(CIFT.CIF AS VARCHAR(20)) AS CIF,  
+    CAST(KR.NO_REKENING AS VARCHAR(50)) AS NO_REKENING,  
+    CAST(CONCAT(LR.TAHUN_POSISI, '-01-01') AS TIMESTAMP) AS TAHUN_POSISI,  
+    CAST(LR.PENJUALAN_BERSIH AS DECIMAL(18, 0)) AS PENJUALAN_BERSIH,  
+    CAST(STRFTIME(STRPTIME(CAST(M.TANGGAL_POSISI AS VARCHAR), '%d%m%Y'), '%Y-%m-%d') AS TIMESTAMP) as TANGGAL_POSISI,
+    CAST(LR.PERIODE AS INT) AS PERIODE,
+    CAST(KR.BARU_PERPANJANGAN AS VARCHAR(50)) AS BARU_PERPANJANGAN,  
+    CAST(A.FID_TP_PRODUK AS NCHAR(10)) AS FID_TP_PRODUK  
+FROM 
+read_parquet("/opt/airflow/data-lake/LAS_T_CIF.parquet")  CIFT
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_APLIKASI.parquet")  A ON A.FID_CIF_LAS = CIFT.CIF_LAS
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_KREDIT.parquet")  KR ON KR.ID_KREDIT = A.FID_KREDIT
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_RUGI_LABA.parquet") LR  ON LR.FID_CIF_LAS = CIFT.CIF_LAS
+INNER JOIN read_parquet("/opt/airflow/data-lake/LAS_T_NERACA_MENENGAH.parquet")  M ON LR.FID_CIF_LAS = M.FID_CIF_LAS
+WHERE CIFT.CIF is not null and KR.NO_REKENING is not null 
+-- AND A.FID_TP_PRODUK IN (5,47,48)

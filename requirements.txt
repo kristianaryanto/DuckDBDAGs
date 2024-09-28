@@ -1,0 +1,6 @@
+dbt-duckdb
+pyarrow==17.0.0
+aioodbc==0.5.0
+airflow-exporter==1.5.3
+jaydebeapi==1.2.3
+minio==7.2.8 
