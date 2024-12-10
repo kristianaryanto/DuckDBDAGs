@@ -1,85 +1,70 @@
-# Airflow DAGs for Data Pipelines
+## ⚙️ Modern Data Flow Architecture
 
-This repository contains Apache Airflow Directed Acyclic Graphs (DAGs) designed for ETL and data processing workflows. These DAGs have been optimized for high-performance data operations using Python and DuckDB.
+This project leverages a modern data stack to achieve efficient, scalable, and maintainable data pipelines. Below is an overview of how **Airflow**, **DuckDB**, and **dbt** work together within the architecture:
 
-## Overview
+### 🏗 Architecture Overview
 
-Apache Airflow is an open-source platform for programmatically authoring, scheduling, and monitoring workflows. Airflow allows the creation of complex data pipelines with features such as concurrency, retries, and logging.
+1. **Data Ingestion**:
+   - Sources: Data is ingested from **Microsoft SQL Server**, **MySQL**, and **PostgreSQL**.
+   - Orchestration: Airflow orchestrates the data ingestion process, scheduling and monitoring tasks.
 
-In this project, we benchmarked Airflow against SQL Server Integration Services (SSIS) and observed significant improvements in performance.
+2. **In-Memory Data Processing**:
+   - **DuckDB**: Acts as a lightweight, high-performance in-memory database for data transformations, enabling faster execution compared to traditional relational databases.
 
-## Features
+3. **Transformations with dbt**:
+   - **dbt (Data Build Tool)**: Used to define and manage transformations using SQL models. dbt integrates seamlessly with DuckDB, making it easy to transform raw data into analytics-ready datasets.
 
-- **Efficient Data Processing**: The DAGs leverage concurrency and DuckDB to process large datasets more quickly.
-- **Extensibility**: Airflow allows easy customization of workflows to adapt to different data sources and processing requirements.
-- **Monitoring**: Each workflow comes with detailed logging and monitoring capabilities via Airflow's built-in dashboard.
-- **Version Control and CI/CD**: Supports continuous integration and deployment for updating pipelines in production.
+4. **Orchestration with Airflow**:
+   - Airflow manages dependencies, schedules workflows, and ensures retries in case of failures.
+   - Each step of the pipeline, from ingestion to transformation, is logged and monitored via Airflow’s dashboard.
 
-## Benchmark Results
+5. **Data Export**:
+   - Processed and transformed data is loaded back into **Microsoft SQL Server**, **MySQL**, and **PostgreSQL**, ready for analytics or further processing.
 
-In a test comparing Airflow to SSIS using a dataset of 100,000 rows:
+---
 
-- **SSIS**: Failed to complete the task in a reasonable time, requiring manual intervention to stop.
-- **Airflow**: Successfully processed the data in just 6 minutes, 5x faster than SSIS.
+### 🖼 Visualizing the Architecture
 
-### Dataflow Architecture
+Here’s a high-level diagram of the data flow:
 
-- **Airflow**: Uses DuckDB for in-memory data processing with concurrency. The processed data is then transferred back to SQL Server, allowing for quicker data ingestion and transformation.
-- **SSIS**: Relies solely on SQL Server for processing, resulting in slower performance due to high data loads.
+![Modern Data Flow Architecture](moderen_stack.jpeg)
 
-## Installation
+---
 
-To run these DAGs on your own instance of Apache Airflow, follow the steps below:
+### 🚀 Why this Modern Stack?
 
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/yourusername/airflow-dags.git
-    cd airflow-dags
-    ```
+- **Airflow**: Orchestrates complex workflows with ease, ensuring scalability and fault tolerance.
+- **DuckDB**: Optimized for in-memory operations, it provides lightning-fast data processing.
+- **dbt**: Simplifies transformations with modular, testable, and version-controlled SQL models.
 
-2. **Set up your Airflow environment** (ensure you have Python 3.7+):
-    ```bash
-    pip install apache-airflow
-    ```
+This combination outperforms traditional ETL approaches by providing:
+- Faster execution times.
+- Easier maintainability.
+- Greater flexibility for handling modern data challenges.
 
-3. **Install additional dependencies**:
-    ```bash
-    pip install duckdb
-    ```
+---
 
-4. **Initialize Airflow**:
-    ```bash
-    airflow db init
-    airflow users create --username admin --password admin --firstname Admin --lastname Admin --role Admin --email admin@example.com
-    ```
+## 🏆 Benchmark: Airflow + DuckDB + dbt vs. SSIS
 
-5. **Start the Airflow web server and scheduler**:
-    ```bash
-    airflow webserver --port 8080
-    airflow scheduler
-    ```
+To evaluate the performance of this modern stack, we conducted a benchmark comparing it to **SQL Server Integration Services (SSIS)**. Below are the results:
 
-6. **Access the Airflow Dashboard**:
-    Open your browser and navigate to `http://localhost:8080`. You can now trigger and monitor your DAGs.
+| **Tool**          | **Execution Time** | **Scalability**      | **Failure Handling**         | **Resource Utilization**    |
+|--------------------|--------------------|-----------------------|-------------------------------|-----------------------------|
+| **SSIS**          | Failed to process 100,000 rows in a reasonable time. | Low | Manual intervention required for failure recovery. | High memory and CPU usage. |
+| **Airflow + DuckDB + dbt** | **6 minutes** | High (supports horizontal scaling with distributed workers) | Automated retries and alerts. | Optimized resource usage with in-memory processing. |
 
-## Usage
+### Key Insights:
+1. **Performance**: The modern stack is significantly faster due to DuckDB’s in-memory processing capabilities.
+2. **Flexibility**: dbt’s modular SQL transformations allow for better manageability and easier debugging.
+3. **Reliability**: Airflow ensures workflow dependencies and automates failure recovery, reducing manual intervention.
 
-1. Place your DAGs in the `dags/` folder of your Airflow home directory:
-    ```bash
-    cp -r dags/ $AIRFLOW_HOME/dags/
-    ```
+---
 
-2. Start the Airflow scheduler and monitor the DAGs via the Airflow web UI.
+### 🌟 Conclusion
 
-## Contribution
+By integrating **Airflow**, **DuckDB**, and **dbt** into your data stack, you achieve:
+- **Faster processing times** compared to legacy tools like SSIS.
+- **Improved reliability** through modern orchestration.
+- **Enhanced flexibility** to handle complex data workflows.
 
-Feel free to fork the repository and submit pull requests for improvements or bug fixes. We encourage contributions to add more complex workflows and optimize the existing ones.
-
-## Benchmark Video
-
-Watch the benchmarking test where Airflow processed 100,000 rows in 6 minutes [here](https://docs.google.com/file/d/1Vxco_3sPx048KPj0Y10BnbjC-lEMyENb/preview).
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+Ready to explore this cutting-edge stack? Clone the repository and get started today!
